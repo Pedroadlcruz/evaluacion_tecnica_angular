@@ -1,1 +1,49 @@
-<p>Pantalla Pokémon</p>
+<section class="pokemon-page" *ngIf="vm$ | async as vm">
+  <header class="page-header">
+    <div class="titles">
+      <h1>Pokémon</h1>
+      <p class="subtitle">Explora el listado y agrega tus favoritos</p>
+    </div>
+    <div class="meta">
+      <span class="total">Total: {{ vm.total }}</span>
+    </div>
+  </header>
+
+  <div class="error" *ngIf="vm.error">
+    {{ vm.error }}
+  </div>
+
+  <div class="loading" *ngIf="vm.loading">
+    <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
+  </div>
+
+  <div class="grid" *ngIf="!vm.loading && !vm.error">
+    <mat-card class="pokemon-card" *ngFor="let item of vm.items; trackBy: trackByPokemonId">
+      <img class="pokemon-image" [src]="item.image" [alt]="item.name" loading="lazy" />
+
+      <div class="card-content">
+        <h3 class="pokemon-name">{{ item.name | titlecase }}</h3>
+      </div>
+
+      <div class="card-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="item.isFavorite"
+          (click)="onAddToFavorites(item)"
+        >
+          {{ item.isFavorite ? 'En Favoritos' : 'Agregar a Favoritos' }}
+        </button>
+      </div>
+    </mat-card>
+  </div>
+
+  <mat-paginator
+    [length]="vm.total"
+    [pageIndex]="vm.pageIndex"
+    [pageSize]="vm.pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    aria-label="Paginador de Pokémon"
+  ></mat-paginator>
+</section>
