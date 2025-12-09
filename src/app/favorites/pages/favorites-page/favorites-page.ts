@@ -1,0 +1,12 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-favorites-page',
+  standalone: true,
+  imports: [],
+  templateUrl: './favorites-page.html',
+  styleUrl: './favorites-page.scss',
+})
+export class FavoritesPageComponent {
+
+}
