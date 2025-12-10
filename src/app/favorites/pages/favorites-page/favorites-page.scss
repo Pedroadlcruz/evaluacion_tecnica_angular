@@ -1,0 +1,92 @@
+:host {
+  display: block;
+}
+
+.favorites-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titles h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: #5f6368;
+}
+
+.meta .counter {
+  font-weight: 600;
+  color: #1a73e8;
+}
+
+.empty-state {
+  border: 1px dashed #c5c8ce;
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+  display: grid;
+  gap: 12px;
+  background: #f9fafb;
+}
+
+.empty-message {
+  margin: 0;
+  color: #5f6368;
+  font-size: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.favorite-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pokemon-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  padding: 12px;
+  background: #f7f9fc;
+  border-radius: 8px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pokemon-name {
+  margin: 0;
+  font-size: 18px;
+}
+
+.alias {
+  margin: 0;
+  color: #5f6368;
+}
+
+.card-actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,1 +1,38 @@
-<p>Pantalla Favoritos</p>
+<section class="favorites-page" *ngIf="favorites$ | async as favorites">
+  <header class="page-header">
+    <div class="titles">
+      <h1>Favoritos</h1>
+      <p class="subtitle">Tus Pokémon guardados</p>
+    </div>
+    <div class="meta">
+      <span class="counter">{{ favorites.length }}/{{ maxFavorites }}</span>
+    </div>
+  </header>
+
+  <div class="empty-state" *ngIf="favorites.length === 0">
+    <p class="empty-message">Aún no tienes Pokémon favoritos.</p>
+    <a mat-stroked-button color="primary" routerLink="/pokemon">Ir a Pokémon</a>
+  </div>
+
+  <div class="grid" *ngIf="favorites.length > 0">
+    <mat-card class="favorite-card" *ngFor="let favorite of favorites; trackBy: trackByFavoriteId">
+      <img
+        class="pokemon-image"
+        [src]="favorite.image"
+        [alt]="favorite.name"
+        loading="lazy"
+      />
+
+      <div class="card-content">
+        <h3 class="pokemon-name">{{ favorite.name | titlecase }}</h3>
+        <p class="alias">Alias: {{ favorite.alias }}</p>
+      </div>
+
+      <div class="card-actions">
+        <button mat-stroked-button color="warn" (click)="onRemove(favorite.id)">
+          Eliminar
+        </button>
+      </div>
+    </mat-card>
+  </div>
+</section>
