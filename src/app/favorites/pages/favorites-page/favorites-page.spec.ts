@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 import { FavoritePokemon } from '../../../core/models';
 import { FavoritesService } from '../../../core/services';
@@ -15,6 +16,8 @@ class FavoritesServiceStub {
   removeFavorite(id: number): void {
     this.#favorites$.next(this.#favorites$.value.filter((item) => item.id !== id));
   }
+
+  updateAlias(): void {}
 }
 
 describe('FavoritesPageComponent', () => {
@@ -26,7 +29,8 @@ describe('FavoritesPageComponent', () => {
       imports: [FavoritesPageComponent, RouterTestingModule, NoopAnimationsModule],
       providers: [
         { provide: FavoritesService, useClass: FavoritesServiceStub },
-        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open']) }
+        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open']) },
+        { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(null) }) } }
       ]
     }).compileComponents();
 

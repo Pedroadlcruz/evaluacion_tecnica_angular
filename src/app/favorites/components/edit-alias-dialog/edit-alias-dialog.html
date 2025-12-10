@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Editar alias</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="alias-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Alias</mat-label>
+      <input matInput formControlName="alias" />
+      <mat-error *ngIf="aliasControl.hasError('required')">El alias es requerido</mat-error>
+      <mat-error *ngIf="aliasControl.hasError('minlength')">Mínimo 3 caracteres</mat-error>
+      <mat-error *ngIf="aliasControl.hasError('pattern')">No se permiten caracteres especiales</mat-error>
+      <mat-error *ngIf="aliasControl.hasError('nonUnique')">Este alias ya existe</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="onSave()" [disabled]="form.invalid">
+    Guardar
+  </button>
+</mat-dialog-actions>
