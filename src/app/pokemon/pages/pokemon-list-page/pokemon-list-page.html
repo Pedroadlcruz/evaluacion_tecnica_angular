@@ -34,6 +34,9 @@
         >
           {{ item.isFavorite ? 'En Favoritos' : 'Agregar a Favoritos' }}
         </button>
+        <button mat-stroked-button color="accent" (click)="onOpenDetails(item)">
+          Ver detalles
+        </button>
       </div>
     </mat-card>
   </div>

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -9,6 +10,7 @@ import { BehaviorSubject, catchError, combineLatest, map, of, shareReplay, start
 
 import { PokemonListItem } from '../../../core/models';
 import { FavoritesService, PokeApiService } from '../../../core/services';
+import { PokemonDetailDialogComponent } from '../../components/pokemon-detail-dialog/pokemon-detail-dialog';
 
 type PageParams = { pageIndex: number; pageSize: number };
 type PokemonListState = {
@@ -31,6 +33,7 @@ type PokemonListViewModel = Omit<PokemonListState, 'items'> & {
     CommonModule,
     MatCardModule,
     MatButtonModule,
+    MatDialogModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
     MatSnackBarModule
@@ -43,6 +46,7 @@ export class PokemonListPageComponent {
   #pokeApiService = inject(PokeApiService);
   #favoritesService = inject(FavoritesService);
   #snackBar = inject(MatSnackBar);
+  #dialog = inject(MatDialog);
 
   readonly pageSizeOptions = [5, 10, 20];
   readonly defaultPageSize = 10;
@@ -130,6 +134,14 @@ export class PokemonListPageComponent {
 
   trackByPokemonId(_: number, item: PokemonListItem & { isFavorite: boolean }): number {
     return item.id;
+  }
+
+  onOpenDetails(pokemon: PokemonListItem): void {
+    this.#dialog.open(PokemonDetailDialogComponent, {
+      data: { id: pokemon.id, name: pokemon.name, image: pokemon.image },
+      width: '640px',
+      maxWidth: '90vw'
+    });
   }
 
   #openSnack(message: string): void {

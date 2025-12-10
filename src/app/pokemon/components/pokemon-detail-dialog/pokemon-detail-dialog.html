@@ -1,0 +1,106 @@
+<section class="detail-dialog" *ngIf="vm$ | async as vm">
+  <header class="dialog-header">
+    <div class="titles">
+      <p class="subtitle">#{{ vm.detail?.id || data.id }}</p>
+      <h2 class="name">{{ (vm.detail?.name || data.name) | titlecase }}</h2>
+    </div>
+    <div class="image-wrapper" *ngIf="data.image">
+      <img [src]="data.image" [alt]="data.name" loading="lazy" />
+    </div>
+  </header>
+
+  <div class="loading" *ngIf="vm.loading">
+    <mat-progress-spinner mode="indeterminate" diameter="42"></mat-progress-spinner>
+  </div>
+
+  <div class="error" *ngIf="vm.error">
+    {{ vm.error }}
+  </div>
+
+  <ng-container *ngIf="!vm.loading && !vm.error && vm.detail as detail">
+    <section class="section">
+      <div class="section-header">
+        <h3>Básico</h3>
+      </div>
+      <div class="basic-grid">
+        <div class="field">
+          <span class="label">Altura</span>
+          <span class="value">{{ detail.height }}</span>
+        </div>
+        <div class="field">
+          <span class="label">Peso</span>
+          <span class="value">{{ detail.weight }}</span>
+        </div>
+        <div class="field">
+          <span class="label">Base exp.</span>
+          <span class="value">{{ detail.baseExperience }}</span>
+        </div>
+        <div class="field">
+          <span class="label">Orden</span>
+          <span class="value">{{ detail.order }}</span>
+        </div>
+        <div class="field">
+          <span class="label">Especie</span>
+          <span class="value">{{ detail.species || 'N/D' }}</span>
+        </div>
+        <div class="field">
+          <span class="label">Movimientos</span>
+          <span class="value">{{ detail.movesCount }}</span>
+        </div>
+        <div class="field">
+          <span class="label">Formas</span>
+          <span class="value">{{ detail.formsCount }}</span>
+        </div>
+        <div class="field">
+          <span class="label">Objetos</span>
+          <span class="value">{{ detail.heldItemsCount }}</span>
+        </div>
+      </div>
+    </section>
+
+    <mat-divider></mat-divider>
+
+    <section class="section">
+      <div class="section-header">
+        <h3>Tipos</h3>
+      </div>
+      <mat-chip-set aria-label="Tipos" *ngIf="detail.types.length > 0; else noTypes">
+        <mat-chip *ngFor="let type of detail.types">{{ type | titlecase }}</mat-chip>
+      </mat-chip-set>
+      <ng-template #noTypes><span class="muted">Sin tipos</span></ng-template>
+    </section>
+
+    <mat-divider></mat-divider>
+
+    <section class="section">
+      <div class="section-header">
+        <h3>Habilidades</h3>
+      </div>
+      <mat-chip-set aria-label="Habilidades" *ngIf="detail.abilities.length > 0; else noAbilities">
+        <mat-chip *ngFor="let ability of detail.abilities">{{ ability | titlecase }}</mat-chip>
+      </mat-chip-set>
+      <ng-template #noAbilities><span class="muted">Sin habilidades</span></ng-template>
+    </section>
+
+    <mat-divider></mat-divider>
+
+    <section class="section">
+      <div class="section-header">
+        <h3>Stats</h3>
+      </div>
+      <div class="stats">
+        <div class="stat" *ngFor="let stat of detail.stats">
+          <span class="label">{{ stat.name | titlecase }}</span>
+          <div class="bar">
+            <div class="bar-fill" [style.width.%]="(stat.value / 200) * 100"></div>
+          </div>
+          <span class="value">{{ stat.value }}</span>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()">Cerrar</button>
+  </mat-dialog-actions>
+</section>

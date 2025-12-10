@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { BehaviorSubject, of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 import { FavoritePokemon } from '../../../core/models';
 import { FavoritesService, PokeApiService } from '../../../core/services';
@@ -32,7 +33,8 @@ describe('PokemonListPageComponent', () => {
       providers: [
         { provide: PokeApiService, useClass: PokeApiServiceStub },
         { provide: FavoritesService, useClass: FavoritesServiceStub },
-        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open']) }
+        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open']) },
+        { provide: MatDialog, useValue: { open: jasmine.createSpy('open') } }
       ]
     }).compileComponents();
 
