@@ -3,6 +3,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { BehaviorSubject, of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { vi } from 'vitest';
 
 import { FavoritePokemon } from '../../../core/models';
 import { FavoritesService, PokeApiService } from '../../../core/services';
@@ -33,8 +34,8 @@ describe('PokemonListPageComponent', () => {
       providers: [
         { provide: PokeApiService, useClass: PokeApiServiceStub },
         { provide: FavoritesService, useClass: FavoritesServiceStub },
-        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open']) },
-        { provide: MatDialog, useValue: { open: jasmine.createSpy('open') } }
+        { provide: MatSnackBar, useValue: { open: vi.fn() } },
+        { provide: MatDialog, useValue: { open: vi.fn() } }
       ]
     }).compileComponents();
 

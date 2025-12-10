@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { vi } from 'vitest';
 
 import { FavoritePokemon } from '../../../core/models';
 import { FavoritesService } from '../../../core/services';
@@ -29,7 +30,7 @@ describe('FavoritesPageComponent', () => {
       imports: [FavoritesPageComponent, RouterTestingModule, NoopAnimationsModule],
       providers: [
         { provide: FavoritesService, useClass: FavoritesServiceStub },
-        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open']) },
+        { provide: MatSnackBar, useValue: { open: vi.fn() } },
         { provide: MatDialog, useValue: { open: () => ({ afterClosed: () => of(null) }) } }
       ]
     }).compileComponents();

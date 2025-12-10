@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
+import { vi } from 'vitest';
 
 import { PokeApiService } from '../../../core/services';
 import { PokemonDetailDialogComponent } from './pokemon-detail-dialog';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 class PokeApiServiceStub {
   getPokemonDetail() {
@@ -26,7 +27,6 @@ class PokeApiServiceStub {
 }
 
 describe('PokemonDetailDialogComponent', () => {
-  let component: PokemonDetailDialogComponent;
   let fixture: ComponentFixture<PokemonDetailDialogComponent>;
 
   beforeEach(async () => {
@@ -38,26 +38,26 @@ describe('PokemonDetailDialogComponent', () => {
           provide: MAT_DIALOG_DATA,
           useValue: { id: 1, name: 'bulbasaur', image: 'image.png' }
         },
-        { provide: MatDialogRef, useValue: { close: () => {} } }
+        { provide: MatDialogRef, useValue: { close: vi.fn() } }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PokemonDetailDialogComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
   it('should handle errors gracefully', () => {
-    const pokeApi = TestBed.inject(PokeApiService) as unknown as {
-      getPokemonDetail: () => any;
-    };
-    spyOn(pokeApi, 'getPokemonDetail').and.returnValue(throwError(() => new Error('fail')));
+    const pokeApi = TestBed.inject(PokeApiService) as unknown as { getPokemonDetail: () => any };
+    vi.spyOn(pokeApi, 'getPokemonDetail').mockReturnValue(throwError(() => new Error('fail')));
 
-    component.vm$.subscribe((vm) => {
+    const errorFixture = TestBed.createComponent(PokemonDetailDialogComponent);
+    errorFixture.detectChanges();
+
+    errorFixture.componentInstance.vm$.subscribe((vm) => {
       if (!vm.loading) {
         expect(vm.error).toBeTruthy();
       }

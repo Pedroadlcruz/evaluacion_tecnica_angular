@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { vi } from 'vitest';
 
 import { EditAliasDialogComponent } from './edit-alias-dialog';
 
@@ -17,7 +18,7 @@ describe('EditAliasDialogComponent', () => {
       imports: [EditAliasDialogComponent],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: dialogData },
-        { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } }
+        { provide: MatDialogRef, useValue: { close: vi.fn() } }
       ]
     }).compileComponents();
 
@@ -33,12 +34,12 @@ describe('EditAliasDialogComponent', () => {
   it('should mark alias as non unique when duplicated', () => {
     component.aliasControl.setValue('Misty');
     component.aliasControl.updateValueAndValidity();
-    expect(component.aliasControl.hasError('nonUnique')).toBeTrue();
+    expect(component.aliasControl.hasError('nonUnique')).toBeTruthy();
   });
 
   it('should allow keeping current alias', () => {
     component.aliasControl.setValue('Pika');
     component.aliasControl.updateValueAndValidity();
-    expect(component.aliasControl.hasError('nonUnique')).toBeFalse();
+    expect(component.aliasControl.hasError('nonUnique')).toBeFalsy();
   });
 });
