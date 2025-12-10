@@ -9,15 +9,29 @@
     </div>
   </header>
 
+  <section class="search">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Buscar por nombre (ej: pikachu)</mat-label>
+      <input matInput [formControl]="searchControl" />
+      <button mat-icon-button matSuffix *ngIf="vm.searchQuery" (click)="searchControl.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </section>
+
   <div class="error" *ngIf="vm.error">
     {{ vm.error }}
+  </div>
+
+  <div class="error" *ngIf="!vm.error && vm.mode === 'search' && vm.searchError && !vm.loading">
+    {{ vm.searchError }}
   </div>
 
   <div class="loading" *ngIf="vm.loading">
     <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
   </div>
 
-  <div class="grid" *ngIf="!vm.loading && !vm.error">
+  <div class="grid" *ngIf="!vm.loading && !vm.error && !(vm.mode === 'search' && vm.searchError)">
     <mat-card class="pokemon-card" *ngFor="let item of vm.items; trackBy: trackByPokemonId">
       <img class="pokemon-image" [src]="item.image" [alt]="item.name" loading="lazy" />
 
@@ -39,9 +53,14 @@
         </button>
       </div>
     </mat-card>
+
+    <div class="empty" *ngIf="vm.items.length === 0 && vm.mode === 'search' && !vm.loading">
+      {{ vm.searchError || 'Sin resultados' }}
+    </div>
   </div>
 
   <mat-paginator
+    *ngIf="vm.mode === 'paged'"
     [length]="vm.total"
     [pageIndex]="vm.pageIndex"
     [pageSize]="vm.pageSize"

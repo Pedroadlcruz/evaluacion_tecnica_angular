@@ -32,6 +32,14 @@ App local: http://localhost:4200
 npm test   # usa ng test (Vitest) - requiere Node 20+
 ```
 
+## Versiones
+
+```bash
+node -v
+npm -v
+npx ng version
+```
+
 ## Rutas principales
 
 - /pokemon
@@ -51,3 +59,4 @@ npm test   # usa ng test (Vitest) - requiere Node 20+
 - Favoritos en `sessionStorage` (máx. 10), edición de alias con validaciones
 - Observables/async pipe (sin Promises/async-await)
 - UI con Angular Material
+- Filtro de búsqueda por nombre en listado de Pokémon (extra opcional)

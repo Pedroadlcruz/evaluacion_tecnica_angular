@@ -1,29 +1,57 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { BehaviorSubject, catchError, combineLatest, map, of, shareReplay, startWith, switchMap } from 'rxjs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  of,
+  shareReplay,
+  startWith,
+  switchMap
+} from 'rxjs';
 
 import { PokemonListItem } from '../../../core/models';
 import { FavoritesService, PokeApiService } from '../../../core/services';
 import { PokemonDetailDialogComponent } from '../../components/pokemon-detail-dialog/pokemon-detail-dialog';
 
 type PageParams = { pageIndex: number; pageSize: number };
-type PokemonListState = {
-  loading: boolean;
-  error: string | null;
-  items: PokemonListItem[];
-  total: number;
-  pageIndex: number;
-  pageSize: number;
-};
+type ListSourceState =
+  | {
+      mode: 'paged';
+      loading: boolean;
+      error: string | null;
+      items: PokemonListItem[];
+      total: number;
+      pageIndex: number;
+      pageSize: number;
+    }
+  | {
+      mode: 'search';
+      loading: boolean;
+      error: string | null;
+      searchError: string | null;
+      items: PokemonListItem[];
+      total: number;
+      pageIndex: number;
+      pageSize: number;
+    };
 
-type PokemonListViewModel = Omit<PokemonListState, 'items'> & {
+type PokemonListViewModel = Omit<ListSourceState, 'items'> & {
   items: Array<PokemonListItem & { isFavorite: boolean }>;
+  searchQuery: string;
 };
 
 @Component({
@@ -31,8 +59,12 @@ type PokemonListViewModel = Omit<PokemonListState, 'items'> & {
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
     MatDialogModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
@@ -56,11 +88,21 @@ export class PokemonListPageComponent {
     pageSize: this.defaultPageSize
   });
 
-  #pokemonListState$ = this.#pageParams$.pipe(
+  readonly searchControl = new FormControl<string>('');
+
+  #search$ = this.searchControl.valueChanges.pipe(
+    startWith(''),
+    map((value) => (value ?? '').trim().toLowerCase()),
+    debounceTime(300),
+    distinctUntilChanged()
+  );
+
+  #pagedState$ = this.#pageParams$.pipe(
     switchMap(({ pageIndex, pageSize }) =>
       this.#pokeApiService.getPokemonPage(pageSize, pageIndex * pageSize).pipe(
         map(
-          ({ count, items }): PokemonListState => ({
+          ({ count, items }): ListSourceState => ({
+            mode: 'paged',
             loading: false,
             error: null,
             items,
@@ -69,7 +111,8 @@ export class PokemonListPageComponent {
             pageSize
           })
         ),
-        startWith<PokemonListState>({
+        startWith<ListSourceState>({
+          mode: 'paged',
           loading: true,
           error: null,
           items: [],
@@ -78,7 +121,8 @@ export class PokemonListPageComponent {
           pageSize
         }),
         catchError(() =>
-          of<PokemonListState>({
+          of<ListSourceState>({
+            mode: 'paged',
             loading: false,
             error: 'No se pudo cargar el listado de Pokémon',
             items: [],
@@ -92,10 +136,61 @@ export class PokemonListPageComponent {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  readonly vm$ = combineLatest([this.#pokemonListState$, this.#favoritesService.favorites$]).pipe(
+  #listSource$ = combineLatest([this.#search$, this.#pagedState$]).pipe(
+    switchMap(([query, pagedState]) => {
+      if (!query) {
+        return of<ListSourceState>(pagedState);
+      }
+
+      return this.#pokeApiService.getPokemonDetail(query).pipe(
+        map((detail): ListSourceState => ({
+          mode: 'search',
+          loading: false,
+          error: null,
+          searchError: null,
+          items: [
+            {
+              id: detail.id,
+              name: detail.name,
+              image: detail.sprites?.front_default ?? ''
+            }
+          ],
+          total: 1,
+          pageIndex: 0,
+          pageSize: pagedState.pageSize
+        })),
+        startWith<ListSourceState>({
+          mode: 'search',
+          loading: true,
+          error: null,
+          searchError: null,
+          items: [],
+          total: 0,
+          pageIndex: pagedState.pageIndex,
+          pageSize: pagedState.pageSize
+        }),
+        catchError(() =>
+          of<ListSourceState>({
+            mode: 'search',
+            loading: false,
+            error: null,
+            searchError: 'No se encontró el Pokémon',
+            items: [],
+            total: 0,
+            pageIndex: pagedState.pageIndex,
+            pageSize: pagedState.pageSize
+          })
+        )
+      );
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  readonly vm$ = combineLatest([this.#listSource$, this.#favoritesService.favorites$, this.#search$]).pipe(
     map(
-      ([state, favorites]): PokemonListViewModel => ({
+      ([state, favorites, searchQuery]): PokemonListViewModel => ({
         ...state,
+        searchQuery,
         items: state.items.map((item) => ({
           ...item,
           isFavorite: favorites.some((favorite) => favorite.id === item.id)
