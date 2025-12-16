@@ -30,24 +30,25 @@ import { PokemonDetailDialogComponent } from '../../components/pokemon-detail-di
 type PageParams = { pageIndex: number; pageSize: number };
 type ListSourceState =
   | {
-      mode: 'paged';
-      loading: boolean;
-      error: string | null;
-      items: PokemonListItem[];
-      total: number;
-      pageIndex: number;
-      pageSize: number;
-    }
+    mode: 'paged';
+    loading: boolean;
+    error: string | null;
+    searchError: string | null;
+    items: PokemonListItem[];
+    total: number;
+    pageIndex: number;
+    pageSize: number;
+  }
   | {
-      mode: 'search';
-      loading: boolean;
-      error: string | null;
-      searchError: string | null;
-      items: PokemonListItem[];
-      total: number;
-      pageIndex: number;
-      pageSize: number;
-    };
+    mode: 'search';
+    loading: boolean;
+    error: string | null;
+    searchError: string | null;
+    items: PokemonListItem[];
+    total: number;
+    pageIndex: number;
+    pageSize: number;
+  };
 
 type PokemonListViewModel = Omit<ListSourceState, 'items'> & {
   items: Array<PokemonListItem & { isFavorite: boolean }>;
@@ -105,6 +106,7 @@ export class PokemonListPageComponent {
             mode: 'paged',
             loading: false,
             error: null,
+            searchError: null,
             items,
             total: count,
             pageIndex,
@@ -115,6 +117,7 @@ export class PokemonListPageComponent {
           mode: 'paged',
           loading: true,
           error: null,
+          searchError: null,
           items: [],
           total: 0,
           pageIndex,
@@ -125,6 +128,7 @@ export class PokemonListPageComponent {
             mode: 'paged',
             loading: false,
             error: 'No se pudo cargar el listado de Pokémon',
+            searchError: null,
             items: [],
             total: 0,
             pageIndex,
