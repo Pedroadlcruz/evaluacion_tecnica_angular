@@ -11,11 +11,13 @@
 
   <section class="search">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Buscar por nombre (ej: pikachu)</mat-label>
+      <mat-label>Buscar por id o nombre completo (ej: pikachu o 25)</mat-label>
       <input matInput [formControl]="searchControl" />
-      <button mat-icon-button matSuffix *ngIf="vm.searchQuery" (click)="searchControl.setValue('')">
-        <mat-icon>close</mat-icon>
+      @if (searchControl.value) {
+      <button mat-icon-button matSuffix (click)="clearSearch()">
+        <mat-icon>X</mat-icon>
       </button>
+      }
     </mat-form-field>
   </section>
 
@@ -40,12 +42,7 @@
       </div>
 
       <div class="card-actions">
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="item.isFavorite"
-          (click)="onAddToFavorites(item)"
-        >
+        <button mat-raised-button color="primary" [disabled]="item.isFavorite" (click)="onAddToFavorites(item)">
           {{ item.isFavorite ? 'En Favoritos' : 'Agregar a Favoritos' }}
         </button>
         <button mat-stroked-button color="accent" (click)="onOpenDetails(item)">
@@ -59,13 +56,6 @@
     </div>
   </div>
 
-  <mat-paginator
-    *ngIf="vm.mode === 'paged'"
-    [length]="vm.total"
-    [pageIndex]="vm.pageIndex"
-    [pageSize]="vm.pageSize"
-    [pageSizeOptions]="pageSizeOptions"
-    (page)="onPageChange($event)"
-    aria-label="Paginador de Pokémon"
-  ></mat-paginator>
+  <mat-paginator *ngIf="vm.mode === 'paged'" [length]="vm.total" [pageIndex]="vm.pageIndex" [pageSize]="vm.pageSize"
+    [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" aria-label="Paginador de Pokémon"></mat-paginator>
 </section>

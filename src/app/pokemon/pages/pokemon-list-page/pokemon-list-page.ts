@@ -213,6 +213,10 @@ export class PokemonListPageComponent {
     this.#pageParams$.next(next);
   }
 
+  clearSearch(): void {
+    this.searchControl.setValue('', { emitEvent: true });
+  }
+
   onAddToFavorites(pokemon: PokemonListItem): void {
     const result = this.#favoritesService.addFavorite(pokemon);
 
